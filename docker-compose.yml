@@ -9,6 +9,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5001:5001"
+    expose:
+      - "5001"
     environment:
       - FLASK_ENV=production
       - FLASK_DEBUG=false
