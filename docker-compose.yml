@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  qr-reader:
+    image: qr-reader-service:latest
+    container_name: qr-reader-microservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - qr-network
+    volumes:
+      - ./logs:/app/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qr-reader.rule=Host(`qr-reader.local`)"
+      - "traefik.http.services.qr-reader.loadbalancer.server.port=5001"
+
+networks:
+  qr-network:
+    driver: bridge
+
+volumes:
+  qr-logs:
+    driver: local
